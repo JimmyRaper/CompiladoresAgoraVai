@@ -1,10 +1,20 @@
 # -*- coding: UTF-8 -*-
+import logging
+logging.basicConfig(
+     level = logging.DEBUG,
+     filename = "log.txt",
+     filemode = "w",
+     format = "%(filename)10s:%(lineno)4d:%(message)s"
+)
+log = logging.getLogger()
+
 import ply.lex as lex
+from ply.lex import TOKEN
 import re
 
 
 #Reserved
-reserved = {
+reserved_words = {
     'se': 'SE',
     'então': 'ENTAO',
     'senão': 'SENAO',
@@ -20,169 +30,146 @@ reserved = {
 
 #Tokens
 tokens = [
-    'ID',
-    'SOMA',
-    'SUBTRACAO',
-    'MULTIPLICACAO',
-    'DIVISAO',
-    'IGUALDADE',
-    'VIRGULA',
-    'ATRIBUICAO',
-    'MENOR',
-    'MAIOR',
-    'MENOR_IGUAL',
-    'MAIOR_IGUAL',
-    'ABRE_PAR',
-    'FECHA_PAR',
-    'DOIS_PONTOS',
-    'ABRE_COL',
-    'FECHA_COL',
-    'E_LOGICO',
-    'OU_LOGICO',
-    'NEGACAO',
-    'DIFERENTE',
-    'NUM_INTEIRO',
-    'NUM_PONTO_FLUTUANTE',
-    'NUM_NOTACAO_CIENTIFICA',
-    'COMENTARIO',
-] + list(reserved.values())
+    "ID",  # identificador
+    # numerais
+    "NUM_NOTACAO_CIENTIFICA",  # ponto flutuante em notaçao científica
+    "NUM_PONTO_FLUTUANTE",  # ponto flutuate
+    "NUM_INTEIRO",  # inteiro
+    # operadores binarios
+    "MAIS",  # +
+    "MENOS",  # -
+    "MULTIPLICACAO",  # *
+    "DIVISAO",  # /
+    "E_LOGICO",  # &&
+    "OU_LOGICO",  # ||
+    "DIFERENCA",  # <>
+    "MENOR_IGUAL",  # <=
+    "MAIOR_IGUAL",  # >=
+    "MENOR",  # <
+    "MAIOR",  # >
+    "IGUAL",  # =
+    # operadores unarios
+    "NEGACAO",  # !
+    # simbolos
+    "ABRE_PARENTESE",  # (
+    "FECHA_PARENTESE",  # )
+    "ABRE_COLCHETE",  # [
+    "FECHA_COLCHETE",  # ]
+    "VIRGULA",  # ,
+    "DOIS_PONTOS",  # :
+    "ATRIBUICAO",  # :=
+    "COMENTARIO", # {***}
+] + list(reserved_words.values())
 
 #Regular expressions
-t_ignore = ' \t'
 
-def t_ID(t):
-    r'[a-zà-úA-ZÀ-Ú_][a-zà-úA-ZÀ-Ú0-9_]*'
-    t.type = reserved.get(t.value,'ID')    # Check for reserved words
-    return t
+digito = r"([0-9])"
+letra = r"([a-zA-ZáÁãÃàÀéÉíÍóÓõÕ])"
+sinal = r"([\-\+]?)"
 
+""" 
+    id deve começar com uma letra
+"""
+id = (
+    r"(" + letra + r"(" + digito + r"+|_|" + letra + r")*)"
+)  # o mesmo que '((letra)(letra|_|([0-9]))*)'
 
-def t_SOMA(t):
-    r'\+'
-    return t
+# inteiro = r"(" + sinal + digito + r"+)"
+# inteiro = r"(" + digito + r"+)"
+inteiro = r"\d+"
 
+flutuante = (
+    # r"(" + digito + r"+\." + digito + r"+?)"
+    # (([-\+]?)([0-9]+)\.([0-9]+))'
+    r'\d+[eE][-+]?\d+|(\.\d+|\d+\.\d*)([eE][-+]?\d+)?'
+    # r'[-+]?[0-9]+(\.([0-9]+)?)'
+    #r'[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?'
+    #r"(([-\+]?)([0-9]+)\.([0-9]+))"
+    )
 
-def t_SUBTRACAO(t):
-    r'\-'
-    return t
+notacao_cientifica = (
+    r"(" + sinal + r"([1-9])\." + digito + r"+[eE]" + sinal + digito + r"+)"
+)  # o mesmo que '(([-\+]?)([1-9])\.([0-9])+[eE]([-\+]?)([0-9]+))'
 
+# Expressões Regulaes para tokens simples.
+# Símbolos.
+t_MAIS = r'\+'
+t_MENOS = r'-'
+t_MULTIPLICACAO = r'\*'
+t_DIVISAO = r'/'
+t_ABRE_PARENTESE = r'\('
+t_FECHA_PARENTESE = r'\)'
+t_ABRE_COLCHETE = r'\['
+t_FECHA_COLCHETE = r'\]'
+t_VIRGULA = r','
+t_ATRIBUICAO = r':='
+t_DOIS_PONTOS = r':'
 
-def t_MULTIPLICACAO(t):
-    r'\*'
-    return t
+# Operadores Lógicos.
+t_E_LOGICO = r'&&'
+t_OU_LOGICO = r'\|\|'
+t_NEGACAO = r'!'
 
+# Operadores Relacionais.
+t_DIFERENCA = r'<>'
+t_MENOR_IGUAL = r'<='
+t_MAIOR_IGUAL = r'>='
+t_MENOR = r'<'
+t_MAIOR = r'>'
+t_IGUAL = r'='
 
-def t_DIVISAO(t):
-    r'/'
-    return t
+@TOKEN(id)
+def t_ID(token):
+    token.type = reserved_words.get(
+        token.value, "ID"
+    )  # não é necessário fazer regras/regex para cada palavra reservada
+    # se o token não for uma palavra reservada automaticamente é um id
+    # As palavras reservadas têm precedências sobre os ids
 
+    return token
 
-def t_IGUALDADE(t):
-    r'\='
-    return t
+@TOKEN(notacao_cientifica)
+def t_NUM_NOTACAO_CIENTIFICA(token):
+    return token
 
+@TOKEN(flutuante)
+def t_NUM_PONTO_FLUTUANTE(token):
+    return token
 
-def t_VIRGULA(t):
-    r','
-    return t
+@TOKEN(inteiro)
+def t_NUM_INTEIRO(token):
+    return token
 
-
-def t_ATRIBUICAO(t):
-    r':='
-    return t
-
-
-def t_MENOR(t):
-    r'<'
-    return t
-
-
-def t_MAIOR(t):
-    r'>'
-    return t
-
-
-def t_MENOR_IGUAL(t):
-    r'<='
-    return t
-
-
-def t_MAIOR_IGUAL(t):
-    r'>='
-    return t
-
-
-def t_ABRE_PAR(t):
-    r'\('
-    return t
-
-
-def t_FECHA_PAR(t):
-    r'\)'
-    return t
-
-
-def t_DOIS_PONTOS(t):
-    r':'
-    return t
-
-
-def t_ABRE_COL(t):
-    r'\['
-    return t
-
-
-def t_FECHA_COL(t):
-    r'\]'
-    return t
-
-
-def t_E_LOGICO(t):
-    r'\&\&'
-    return t
-
-
-def t_OU_LOGICO(t):
-    r'\|\|'
-    return t
-
-
-def t_NEGACAO(t):
-    r'!'
-    return t
-
-
-def t_DIFERENTE(t):
-    r'<>'
-    return t
-
-
-def t_NUM_INTEIRO(t):
-    r'[0-9]+'
-    return t
-
-def t_NUM_PONTO_FLUTUANTE(t):
-    r'([0-9]+\.[0-9]*|[0-9]*\.[0-9]+)'
-    return t
-
-
-def t_NUM_NOTACAO_CIENTIFICA(t):
-    r'([0-9]+(\.[0-9]+)?|\.[0-9]+|\.|[0-9]+)([eE][-+]? [0-9]+)'
-    return t
+t_ignore = " \t"
 
 # Comments
-def t_COMENTARIO(t):
-    r'{[^(})]*}'
-    lineCount = re.findall('\n', t.value)
-    t.lexer.lineno += len(lineCount)
-    return t
+def t_COMENTARIO(token):
+    r"(\{((.|\n)*?)\})"
+    token.lexer.lineno += token.value.count("\n")
+    return token
 
 def t_newLine(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
 
+def define_column(input, lexpos):
+    begin_line = input.rfind("\n", 0, lexpos) + 1
+    return (lexpos - begin_line) + 1
+
 
 def t_error(t):
-    raise Exception("Illegal character '{}' (linha {})".format(t.value[0], t.lineno))
+
+    # file = token.lexer.filename
+    line = t.lineno
+    # column = define_column(token.lexer.backup_data, token.lexpos)
+    message = "Caracter ilegal '%s'" % t.value[0]
+
+    # print(f"[{file}]:[{line},{column}]: {message}.") 
+    print(message)
+
+    t.lexer.skip(1)
+
+    # token.lexer.has_error = Trueb
 
 lexer = lex.lex()
 
