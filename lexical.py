@@ -58,7 +58,6 @@ tokens = [
     "VIRGULA",  # ,
     "DOIS_PONTOS",  # :
     "ATRIBUICAO",  # :=
-    "COMENTARIO", # {***}
 ] + list(reserved_words.values())
 
 #Regular expressions
@@ -140,13 +139,13 @@ def t_NUM_PONTO_FLUTUANTE(token):
 def t_NUM_INTEIRO(token):
     return token
 
-t_ignore = " \t"
+t_ANY_ignore = ' \t\r\f\v'
 
 # Comments
 def t_COMENTARIO(token):
-    r"(\{((.|\n)*?)\})"
-    token.lexer.lineno += token.value.count("\n")
-    return token
+    r'(\{(.|\n)*?\})|(\{(.|\n)*?)$'
+    # r'{.*}'
+    pass
 
 def t_newLine(t):
     r'\n+'
@@ -179,7 +178,7 @@ def analyzer(data_file):
     lexer.input(data_file)
 
     tokens_list = []
-
+    print("Executando análise léxica...")
     while True:
         token = lexer.token()
         if not token:
@@ -187,6 +186,7 @@ def analyzer(data_file):
         tokens_list.append(token)
     
     lexer = lex.lex()
+    print("Análise léxica terminada...")
     return tokens_list
 
 if __name__ == '__main__':

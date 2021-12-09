@@ -1,80 +1,44 @@
-inteiro: tamanho
-tamanho: 10
+inteiro: vet[10]
+inteiro: tam
 
-inteiro: vetor[tamanho]
+tam := 10
 
-inteiro particiona(inteiro: vetor[], inteiro: inicio, inteiro:final)
+{ preenche o vetor no pior caso }
+preencheVetor()
+  inteiro: i
+  inteiro: j
+  i := 0
+  j := tam
+  repita
+    vet[i] = j
+    i := i + 1
+    j := j - 1
+  até i < tam
+fim
 
-    inteiro: esquerda
-    inteiro: direita
-    inteiro: pivo
-    inteiro: auxiliar
-
-    esquerda := inicio
-    direita := final
-    pivo := vetor[esquerda]
-
+{ implementação do bubble sort }
+bubble_sort()
+  inteiro: i
+  i := 0
+  repita
+    inteiro: j
+    j := 0
     repita
-
-        se esquerda < direita então
-
-            repita
-
-                se v[esquerda] <= pivo então
-                    
-                    esquerda := esquerda + 1
-                fim
-            
-            até vetor[esquerda] > pivo
-
-            repita
-
-                se v[direita] > pivo então
-                    
-                    direita := direita - 1
-                fim
-
-            até v[direita] < pivo
-
-            se esquerda < direita então
-                auxiliar := vetor[esquerda]
-                v[esquerda] = v[direita]
-                v[direita] = auxiliar                    
-            fim
-        fim
-    
-    até esquerda >= direita
-
-    vetor[inicio] := v[direita]
-    vetor[esquerda] := v[direita]
-    vetor[direita] := auxiliar
-    retorna(direita)
-
+      se vet[i] > v[j] então
+        inteiro: temp
+        temp := vet[i]
+        vet[i] := vet[j]
+        vet[j] := temp
+      fim
+      j := j + 1
+    até j < i
+    i := i + 1
+  até i < tam
 fim
 
-quicksort(inteiro: vetor[], inteiro: inicio, inteiro:final)
-
-    inteiro: pivo
-    
-    se final > inicio então
-        pivo := particiona(vetor, inicio, final)
-        quicksort(vetor, inicio, pivo -1)
-        quicksort(vetor, pivo + 1, final)
-    fim
-
-    retorna(0)
-fim
-
+{ programa principal }
 inteiro principal()
-    quicksort(vetor, 0, tamanho-1)
-    i := 0
-    
-    repita
-        escreva(vetor[i])
-        i := i + 1
-
-    até i = tamanho
-    retorno(0)
+  preencheVetor()
+  bubble_sort()
+  retorna(0)
 fim
-
-{aosidjoasoaisjoaji}
