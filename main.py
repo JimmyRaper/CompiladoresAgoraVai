@@ -2,6 +2,7 @@ from sys import argv
 import lexical
 import parser
 import utils
+import prune_tree
 
 
 def main(argv):
@@ -29,5 +30,13 @@ def main(argv):
         return
     
     utils.export_tree(parse_tree, "parse_tree")
+    
+    # === Prune Tree Process === #
+    
+    prune_tree.prune_tree(parse_tree)
+    
+    print('Podando a árvore...')
+    
+    utils.export_tree(parse_tree, "prune_tree")
 
 main(argv)

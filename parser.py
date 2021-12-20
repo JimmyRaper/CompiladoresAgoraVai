@@ -27,11 +27,11 @@ def p_programa(p):
 
     global index_node
     
-    index_node += 1
     root = Node(str(index_node), value='programa')
+    index_node += 1
 
-    p[0] = root
     p[1].parent = root
+    p[0] = root
 
 
 def p_lista_declaracoes(p):
@@ -42,15 +42,15 @@ def p_lista_declaracoes(p):
 
     global index_node
     
-    index_node += 1
     pai = Node(str(index_node), value='lista_declaracoes')
+    index_node += 1
     
-    p[0] = pai
     p[1].parent = pai
     
     if (len(p) == 3):
         p[2].parent = pai
 
+    p[0] = pai
 
 def p_declaracao(p):
     '''
@@ -61,11 +61,11 @@ def p_declaracao(p):
 
     global index_node
     
-    index_node += 1
     pai = Node(str(index_node), value='declaracao')
+    index_node += 1
 
-    p[0] = pai
     p[1].parent = pai
+    p[0] = pai
 
 
 def p_declaracao_variaveis(p):
@@ -75,17 +75,17 @@ def p_declaracao_variaveis(p):
 
     global index_node
     
-    index_node += 1
     pai = Node(str(index_node), value='declaracao_variaveis')
+    index_node += 1
 
-    p[0] = pai
     p[1].parent = pai
 
-    index_node += 1
     Node(str(index_node), pai, value=str(p[2]), line=p.lineno(2), pos=p.lexpos(2))
+    index_node += 1
     
     p[3].parent = pai
 
+    p[0] = pai
 
 def p_inicializacao_variaveis(p):
     '''
@@ -94,12 +94,12 @@ def p_inicializacao_variaveis(p):
 
     global index_node
     
-    index_node += 1
     pai = Node(str(index_node), value='inicializacao_variaveis')
+    index_node += 1
     
-    p[0] = pai
     p[1].parent = pai
 
+    p[0] = pai
 
 def p_lista_variaveis(p):
     '''
@@ -109,19 +109,20 @@ def p_lista_variaveis(p):
 
     global index_node
 
-    index_node += 1
     pai = Node(str(index_node), value='lista_variaveis')
-
-    p[0] = pai
-    p[1].parent = pai
+    index_node += 1
 
     if(len(p) == 4):
-        index_node += 1
+        p[1].parent = pai
         Node(str(index_node), pai, value=str(p[2]), line=p.lineno(2), pos=p.lexpos(2))
+        index_node += 1
         p[3].parent = pai
+    else:
+        p[1].parent = pai
 
-
-
+    p[0] = pai
+    
+    
 def p_var(p):
     '''
     var : ID
@@ -130,17 +131,17 @@ def p_var(p):
 
     global index_node
     
-    index_node += 1
     pai = Node(str(index_node), value='var', line=p.lineno(1), pos=p.lexpos(1))
-    p[0] = pai
-
     index_node += 1
+
     Node(str(index_node), pai, value=str(p[1]), line=p.lineno(1), pos=p.lexpos(1))
+    index_node += 1
 
 
     if(len(p) == 3):
         p[2].parent = pai
 
+    p[0] = pai
 
 def p_indice(p):
     '''
@@ -150,28 +151,28 @@ def p_indice(p):
 
     global index_node
     
-    index_node += 1
     pai = Node(str(index_node), value='indice')
+    index_node += 1
     
-    p[0] = pai
 
     if(len(p) == 5):
         p[1].parent = pai
-        index_node += 1
         Node(str(index_node), pai, value=str(p[2]), line=p.lineno(2), pos=p.lexpos(2))
+        index_node += 1
         
         p[3].parent = pai
-        index_node += 1
         Node(str(index_node), pai, value=str(p[4]), line=p.lineno(4), pos=p.lexpos(4))
+        index_node += 1
     
     elif(len(p) == 4):
-        index_node += 1
         Node(str(index_node), pai, value=str(p[1]), line=p.lineno(1), pos=p.lexpos(1))
+        index_node += 1
         
         p[2].parent = pai
-        index_node += 1
         Node(str(index_node), pai, value=str(p[3]), line=p.lineno(3), pos=p.lexpos(3))
+        index_node += 1
 
+    p[0] = pai
 
 
 def p_tipo(p):
@@ -182,13 +183,15 @@ def p_tipo(p):
 
     global index_node
 
-    index_node += 1
     pai = Node(str(index_node), value="tipo")
+    index_node += 1
     
+    
+    Node(str(index_node), value=str(p[1]), parent=pai, line=p.lineno(1), pos=p.lexpos(1))
+    index_node += 1
+
     p[0] = pai
     
-    index_node += 1
-    Node(str(index_node), value=str(p[1]), parent=pai, line=p.lineno(1), pos=p.lexpos(1))
 
 def p_declaracao_funcao(p):
     '''
@@ -197,14 +200,16 @@ def p_declaracao_funcao(p):
     '''
 
     global index_node
-    index_node += 1
     pai = Node(str(index_node), value="declaracao_funcao")
+    index_node += 1
 
-    p[0] = pai
     p[1].parent = pai
 
     if(len(p) == 3):
         p[2].parent = pai
+
+    p[0] = pai
+    
 
 def p_cabecalho(p):
     '''
@@ -213,24 +218,23 @@ def p_cabecalho(p):
 
     global index_node
     pai = Node(str(index_node), value="cabecalho")
+    index_node += 1
     
-    index_node += 1
-    p[0] = pai
-
-    index_node += 1
     Node(str(index_node), pai, value=str(p[1]), line=p.lineno(1), pos=p.lexpos(1))
-    
     index_node += 1
+    
     Node(str(index_node), pai, value=str(p[2]), line=p.lineno(2), pos=p.lexpos(2))
+    index_node += 1
     p[3].parent = pai
     
-    index_node += 1
     Node(str(index_node), pai, value=str(p[4]), line=p.lineno(4), pos=p.lexpos(4))
+    index_node += 1
     p[5].parent = pai
     
-    index_node += 1
     Node(str(index_node), pai, value=str(p[6]), line=p.lineno(6), pos=p.lexpos(6))
+    index_node += 1
 
+    p[0] = pai
 
 def p_lista_parametros(p):
     '''
@@ -240,17 +244,21 @@ def p_lista_parametros(p):
     '''
 
     global index_node
-    index_node += 1
     pai = Node(str(index_node), value="lista_parametros")
-
-    p[0] = pai
-    p[1].parent = pai
+    index_node += 1
 
     if(len(p) == 4):
-        index_node += 1
+        p[1].parent = pai
         Node(str(index_node), pai, value=str(p[2]), line=p.lineno(2), pos=p.lexpos(2))
+        index_node += 1
         p[3].parent = pai
+    elif(p[1] is not None):
+        p[1].parent = pai
+    else:
+        Node(str(index_node), pai, value="")
+        index_node += 1
 
+    p[0] = pai
 
 def p_parametro(p):
     '''
@@ -259,17 +267,18 @@ def p_parametro(p):
     '''
 
     global index_node
-    index_node += 1
     pai = Node(str(index_node), value="parametro")
+    index_node += 1
 
-    p[0] = pai
     p[1].parent = pai
     
-    index_node += 1
     Node(str(index_node), pai, value=str(p[2]), line=p.lineno(2), pos=p.lexpos(2))
-    
     index_node += 1
+    
     Node(str(index_node), pai, value=str(p[3]), line=p.lineno(3), pos=p.lexpos(3))
+    index_node += 1
+
+    p[0] = pai
 
 def p_corpo(p):
     '''
@@ -278,15 +287,18 @@ def p_corpo(p):
     '''
 
     global index_node
-    index_node += 1
     pai = Node(str(index_node), value="corpo")
+    index_node += 1
     
-    p[0] = pai
-    p[1].parent = pai
     
     if(len(p) == 3):
+        p[1].parent = pai
         p[2].parent = pai
+    else:
+        Node(str(index_node), value="")
+        index_node += 1
 
+    p[0] = pai
 
 def p_acao(p):
     '''
@@ -300,11 +312,11 @@ def p_acao(p):
     '''
 
     global index_node
-    index_node += 1
     pai = Node(str(index_node), value="acao")
+    index_node += 1
 
-    p[0] = pai
     p[1].parent = pai
+    p[0] = pai
 
 
 def p_se(p):
@@ -314,44 +326,44 @@ def p_se(p):
     '''
 
     global index_node
-    index_node += 1
     pai = Node(str(index_node), value="se")
-    p[0] = pai
-    
     index_node += 1
+    
     Node(str(index_node), pai, value=str(p[1]), line=p.lineno(1), pos=p.lexpos(1))
+    index_node += 1
     p[2].parent = pai
     
-    index_node += 1
     Node(str(index_node), pai, value=str(p[3]), line=p.lineno(3), pos=p.lexpos(3))
+    index_node += 1
     p[4].parent = pai
     
-    index_node += 1
     Node(str(index_node), pai, value=str(p[5]), line=p.lineno(5), pos=p.lexpos(5))
+    index_node += 1
     
     if(len(p) == 8):
         p[6].parent = pai
         index_node += 1
         Node(str(index_node), pai, value=str(p[7]), line=p.lineno(7), pos=p.lexpos(7))
 
+    p[0] = pai
 
 def p_repita(p):
     '''
     repita : REPITA corpo ATE expressao
     '''
     global index_node
-    index_node += 1
     pai = Node(str(index_node), value="repita")
-    p[0] = pai
-    
     index_node += 1
+    
     Node(str(index_node), pai, value=str(p[1]), line=p.lineno(1), pos=p.lexpos(1))
+    index_node += 1
     p[2].parent = pai
     
-    index_node += 1
     Node(str(index_node), pai, value=str(p[3]), line=p.lineno(3), pos=p.lexpos(3))
+    index_node += 1
     p[4].parent = pai
 
+    p[0] = pai
 
 def p_atribuicao(p):
     '''
@@ -359,16 +371,16 @@ def p_atribuicao(p):
     '''
     
     global index_node
-    index_node += 1
     pai = Node(str(index_node), value="atribuicao", line=p.lineno(2), pos=p.lexpos(2))
+    index_node += 1
     
-    p[0] = pai
     p[1].parent = pai
     
-    index_node += 1
     Node(str(index_node), pai, value=str(p[2]), line=p.lineno(2), pos=p.lexpos(2))
+    index_node += 1
     p[3].parent = pai
 
+    p[0] = pai
 
 def p_leia(p):
     '''
@@ -376,21 +388,21 @@ def p_leia(p):
     '''
 
     global index_node
-    index_node += 1
     pai = Node(str(index_node), value="leia")
-    
-    p[0] = pai
-    
     index_node += 1
+    
+    
     Node(str(index_node), pai, value=str(p[1]), line=p.lineno(1), pos=p.lexpos(1))
-    
     index_node += 1
+    
     Node(str(index_node), pai, value=str(p[2]), line=p.lineno(2), pos=p.lexpos(2))
+    index_node += 1
     p[3].parent = pai
     
-    index_node += 1
     Node(str(index_node), pai, value=str(p[4]), line=p.lineno(1), pos=p.lexpos(1))
+    index_node += 1
 
+    p[0] = pai
 
 def p_escreva(p):
     '''
@@ -398,21 +410,21 @@ def p_escreva(p):
     '''
 
     global index_node
-    index_node += 1
     pai = Node(str(index_node), value="escreva")
+    index_node += 1
 
-    p[0] = pai
     
-    index_node += 1
     Node(str(index_node), pai, value=str(p[1]), line=p.lineno(1), pos=p.lexpos(1))
-    
     index_node += 1
+    
     Node(str(index_node), pai, value=str(p[2]), line=p.lineno(2), pos=p.lexpos(2))
+    index_node += 1
     p[3].parent = pai
     
-    index_node += 1
     Node(str(index_node), pai, value=str(p[4]), line=p.lineno(4), pos=p.lexpos(4))
+    index_node += 1
 
+    p[0] = pai
 
 def p_retorna(p):
     '''
@@ -420,21 +432,21 @@ def p_retorna(p):
     '''
 
     global index_node
-    index_node += 1
     pai = Node(str(index_node), value="retorna", line=p.lineno(1), pos=p.lexpos(1))
-    
-    p[0] = pai
-    
     index_node += 1
+    
+    
     Node(str(index_node), pai, value=str(p[1]), line=p.lineno(1), pos=p.lexpos(1))
-    
     index_node += 1
+    
     Node(str(index_node), pai, value=str(p[2]), line=p.lineno(2), pos=p.lexpos(2))
+    index_node += 1
     p[3].parent = pai
     
-    index_node += 1
     Node(str(index_node), pai, value=str(p[4]), line=p.lineno(4), pos=p.lexpos(4))
+    index_node += 1
 
+    p[0] = pai
 
 def p_expressao(p):
     '''
@@ -443,12 +455,12 @@ def p_expressao(p):
     '''
 
     global index_node
-    index_node += 1
     pai = Node(str(index_node), value="expressao")
+    index_node += 1
     
-    p[0] = pai
     p[1].parent = pai
 
+    p[0] = pai
 
 def p_expressao_logica(p):
     '''
@@ -457,17 +469,16 @@ def p_expressao_logica(p):
     '''
 
     global index_node
-    index_node += 1
     pai = Node(str(index_node), value="expressao_logica")
+    index_node += 1
     
-    p[0] = pai
     p[1].parent = pai
 
-    
     if(len(p) == 4):
         p[2].parent = pai
         p[3].parent = pai
         
+    p[0] = pai
 
 def p_expressao_simples(p):
     '''
@@ -476,16 +487,16 @@ def p_expressao_simples(p):
     '''
 
     global index_node
-    index_node += 1
     pai = Node(str(index_node), value="expressao_simples")
+    index_node += 1
     
-    p[0] = pai
     p[1].parent = pai
     
     if(len(p) == 4):
         p[2].parent = pai
         p[3].parent = pai
 
+    p[0] = pai
 
 def p_expressao_aditiva(p):
     '''
@@ -494,16 +505,16 @@ def p_expressao_aditiva(p):
     '''
 
     global index_node
-    index_node += 1
     pai = Node(str(index_node), value="expressao_aditiva")
+    index_node += 1
     
-    p[0] = pai
     p[1].parent = pai
     
     if(len(p) == 4):
         p[2].parent = pai
         p[3].parent = pai
 
+    p[0] = pai
 
 def p_expressao_multiplicativa(p):
     '''
@@ -512,16 +523,16 @@ def p_expressao_multiplicativa(p):
     '''
 
     global index_node
-    index_node += 1
     pai = Node(str(index_node), value="expressao_multiplicativa")
+    index_node += 1
     
-    p[0] = pai
     p[1].parent = pai
     
     if(len(p) == 4):
         p[2].parent = pai
         p[3].parent = pai
 
+    p[0] = pai
 
 def p_expressao_unaria(p):
     '''
@@ -531,21 +542,22 @@ def p_expressao_unaria(p):
     '''
 
     global index_node
-    index_node += 1
     pai = Node(str(index_node), value="expressao_unaria")
+    index_node += 1
     
-    p[0] = pai
     
     if(len(p) == 3):
         if(p[1] == '!'):
-            index_node += 1
             Node(str(index_node), pai, value=str(p[1]), line=p.lineno(1), pos=p.lexpos(1))
+            index_node += 1
         else:
             p[1].parent = pai
 
         p[2].parent = pai
     else:  
         p[1].parent = pai
+
+    p[0] = pai
 
 def p_operator_relational(p):
     '''
@@ -558,14 +570,13 @@ def p_operator_relational(p):
     '''
 
     global index_node
-    index_node += 1
     pai = Node(str(index_node), value='operador_relacional')
-    p[0] = pai
-    
-    
     index_node += 1
+    
     Node(str(index_node), pai, value=str(p[1]), line=p.lineno(1), pos=p.lexpos(1))
+    index_node += 1
 
+    p[0] = pai
 
 def p_operador_soma(p):
     '''
@@ -574,14 +585,14 @@ def p_operador_soma(p):
     '''
 
     global index_node
-    index_node += 1
     pai = Node(str(index_node), value='operador_soma')
-    p[0] = pai
-    
-    
     index_node += 1
+    
+    
     Node(str(index_node), pai, value=str(p[1]), line=p.lineno(1), pos=p.lexpos(1))
+    index_node += 1
 
+    p[0] = pai
 
 def p_operador_logico(p):
     '''
@@ -590,14 +601,14 @@ def p_operador_logico(p):
     '''
 
     global index_node
-    index_node += 1
     pai = Node(str(index_node), value='operador_logico')
-    p[0] = pai
-    
-    
     index_node += 1
+    
+    
     Node(str(index_node), pai, value=str(p[1]), line=p.lineno(1), pos=p.lexpos(1))
+    index_node += 1
 
+    p[0] = pai
 
 def p_operador_negacao(p):
 
@@ -606,13 +617,13 @@ def p_operador_negacao(p):
     '''
 
     global index_node
-    index_node += 1
     pai = Node(str(index_node), value='operador_negacao')
-    p[0] = pai
-    
     index_node += 1
+    
     Node(str(index_node), pai, value=str(p[1]), line=p.lineno(1), pos=p.lexpos(1))
+    index_node += 1
 
+    p[0] = pai
 
 
 def p_operador_multiplicacao(p):
@@ -622,13 +633,13 @@ def p_operador_multiplicacao(p):
     '''
 
     global index_node
-    index_node += 1
     pai = Node(str(index_node), value='operador_multiplicacao')
-    p[0] = pai
-    
     index_node += 1
+    
     Node(str(index_node), pai, value=str(p[1]), line=p.lineno(1), pos=p.lexpos(1))
+    index_node += 1
 
+    p[0] = pai
 
 def p_fator(p):
     '''
@@ -639,21 +650,21 @@ def p_fator(p):
     '''
 
     global index_node
-    index_node += 1
     pai = Node(str(index_node), value='fator')
-    p[0] = pai
+    index_node += 1
     
     
     if(len(p) == 4):
-        index_node += 1
         Node(str(index_node), pai, value=str(p[1]), line=p.lineno(1), pos=p.lexpos(1))
+        index_node += 1
         p[2].parent = pai
         
-        index_node += 1
         Node(str(index_node), pai, value=str(p[3]), line=p.lineno(3), pos=p.lexpos(3))
-    elif(len(p) == 2):
+        index_node += 1
+    else:
         p[1].parent = pai
 
+    p[0] = pai
 
 def p_numero(p):
     '''
@@ -663,13 +674,13 @@ def p_numero(p):
     '''
 
     global index_node
-    index_node += 1
     pai = Node(str(index_node), value='numero')
-    p[0] = pai
-    
-    
     index_node += 1
+    
     Node(str(index_node), pai, value=p[1], line=p.lineno(1), pos=p.lexpos(1))
+    index_node += 1
+
+    p[0] = pai
 
 def p_chamada_funcao(p):
     '''
@@ -677,20 +688,20 @@ def p_chamada_funcao(p):
     '''
 
     global index_node
-    index_node += 1
     pai = Node(str(index_node), value='chamada_funcao', line=p.lineno(1), pos=p.lexpos(1))
-    p[0] = pai
+    index_node += 1
     
-    index_node += 1
     Node(str(index_node), pai, value=str(p[1]), line=p.lineno(1), pos=p.lexpos(1))
-        
     index_node += 1
+        
     Node(str(index_node), pai, value=str(p[2]), line=p.lineno(2), pos=p.lexpos(2))
+    index_node += 1
     p[3].parent = pai
         
-    index_node += 1
     Node(str(index_node), pai, value=str(p[4]), line=p.lineno(4), pos=p.lexpos(4))
+    index_node += 1
 
+    p[0] = pai
 
 
 def p_lista_argumentos(p):
@@ -701,24 +712,23 @@ def p_lista_argumentos(p):
     '''
 
     global index_node
-    index_node += 1
     pai = Node(str(index_node), value='lista_argumentos')
-    p[0] = pai
-    
+    index_node += 1
     
     if(len(p) == 4):
         p[1].parent = pai
-        index_node += 1
         Node(str(index_node), pai, value=str(p[2]), line=p.lineno(2), pos=p.lexpos(2))
+        index_node += 1
         
         p[3].parent = pai
     
     elif(p[1] is not None):
         p[1].parent = pai
     else:
-        index_node += 1
         Node(str(index_node), pai, value="")
+        index_node += 1
 
+    p[0] = pai
 
 def p_vazio(p):
     '''
@@ -726,8 +736,9 @@ def p_vazio(p):
     '''
 
     global index_node
-    index_node += 1
     pai = Node(str(index_node), value='vazio')
+    index_node += 1
+
     p[0] = pai
 
 
