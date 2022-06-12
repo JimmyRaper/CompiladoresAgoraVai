@@ -16,10 +16,7 @@ def main(argv):
     
     # === Lexical Process === #
     tokens = lexical.analyzer(data_file)
-    
-    # Print Tokens List
-    # utils.print_tokens(tokens)
-    
+        
     # Save Token List
     utils.save_tokens(tokens,'Tokens.txt')
 
