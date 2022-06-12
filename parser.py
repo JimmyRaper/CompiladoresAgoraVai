@@ -137,7 +137,6 @@ def p_var(p):
     Node(str(index_node), pai, value=str(p[1]), line=p.lineno(1), pos=p.lexpos(1))
     index_node += 1
 
-
     if(len(p) == 3):
         p[2].parent = pai
 
@@ -154,7 +153,6 @@ def p_indice(p):
     pai = Node(str(index_node), value='indice')
     index_node += 1
     
-
     if(len(p) == 5):
         p[1].parent = pai
         Node(str(index_node), pai, value=str(p[2]), line=p.lineno(2), pos=p.lexpos(2))
@@ -162,9 +160,8 @@ def p_indice(p):
         
         p[3].parent = pai
         Node(str(index_node), pai, value=str(p[4]), line=p.lineno(4), pos=p.lexpos(4))
-        index_node += 1
-    
-    elif(len(p) == 4):
+        index_node += 1 
+    else:
         Node(str(index_node), pai, value=str(p[1]), line=p.lineno(1), pos=p.lexpos(1))
         index_node += 1
         
@@ -295,7 +292,7 @@ def p_corpo(p):
         p[1].parent = pai
         p[2].parent = pai
     else:
-        Node(str(index_node), value="")
+        Node(str(index_node), pai, value="")
         index_node += 1
 
     p[0] = pai
@@ -342,8 +339,8 @@ def p_se(p):
     
     if(len(p) == 8):
         p[6].parent = pai
-        index_node += 1
         Node(str(index_node), pai, value=str(p[7]), line=p.lineno(7), pos=p.lexpos(7))
+        index_node += 1
 
     p[0] = pai
 
@@ -559,7 +556,7 @@ def p_expressao_unaria(p):
 
     p[0] = pai
 
-def p_operator_relational(p):
+def p_operator_relacional(p):
     '''
     operador_relacional : MENOR
                         | MAIOR
@@ -644,8 +641,8 @@ def p_operador_multiplicacao(p):
 def p_fator(p):
     '''
         fator : ABRE_PARENTESE expressao FECHA_PARENTESE
-            | var
             | chamada_funcao
+            | var
             | numero
     '''
 
@@ -734,12 +731,7 @@ def p_vazio(p):
     '''
         vazio :
     '''
-
-    global index_node
-    pai = Node(str(index_node), value='vazio')
-    index_node += 1
-
-    p[0] = pai
+    pass
 
 
 def p_error(p):

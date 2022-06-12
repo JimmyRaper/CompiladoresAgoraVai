@@ -129,14 +129,17 @@ def t_ID(token):
 
 @TOKEN(notacao_cientifica)
 def t_NUM_NOTACAO_CIENTIFICA(token):
+    token.value = float(token.value)
     return token
 
 @TOKEN(flutuante)
 def t_NUM_PONTO_FLUTUANTE(token):
+    token.value = float(token.value)
     return token
 
 @TOKEN(inteiro)
 def t_NUM_INTEIRO(token):
+    token.value = int(token.value)
     return token
 
 t_ANY_ignore = ' \t\r\f\v'

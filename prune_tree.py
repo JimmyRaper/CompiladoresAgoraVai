@@ -1,165 +1,173 @@
 # -*- coding: utf-8 -*-
-from anytree import Node, RenderTree
 
 nodes_read = []
 
 
-def examine_node(node):
-    if(node.value == 'programa'):
-        program = node
+def examine_tree(tree):
+    if (tree.value == 'programa'):
+        program = tree
         children = list(program.children)
-
-        while(len(children) > 0):
-            node = children[0]
-            if(children[0].value == 'declaracao'):
-                children = children[1:]
-
+        
+        while (len(children) > 0):
+            if (children[0].value != 'declaracao'):
+                node = children[0]
                 node.parent = None
-                node.children[0].parent = program
-            else:
-                node.parent = None
-
+                
                 children = children[1:]
                 children = list(node.children) + children
+            else:
+                node = children[0]
+                children = children[1:]
+                
+                node.parent = None
+                node.children[0].parent = program
 
         return program
-    elif(node.value == 'cabecalho'):
-        for child in node.children:
-            node.parent.children = list(node.parent.children) + [child]
+    elif(tree.value == 'cabecalho'):
+        for child in tree.children:
+            tree.parent.children = list(tree.parent.children) + [child]
 
-        cabecalho = node.parent
-        node.parent = None
+        cabecalho = tree.parent
+        tree.parent = None
 
         return cabecalho
-    elif(node.value == 'corpo'):
-        body = node
+    elif(tree.value == 'corpo'):
+        body = tree
         children = list(body.children)
-
-        while(len(children) > 0):
-            node = children[0]
-            if(children[0].value == 'acao'):
+        
+        while (len(children) > 0):
+            if (children[0].value != 'acao'):
+                node = children[0]
+                node.parent = None
                 children = children[1:]
+                
+                if len(node.children) > 0:
+                    children = list(node.children) + children
+            else:
+                node = children[0]
+                children = children[1:]
+                
                 node.parent = None
                 node.children[0].parent = body
-            else:
-                node.parent = None
-                children = children[1:]
-                if len(node.children) > 0:
-                    children = list(node.children) + children
 
         return body
-    elif(node.value == 'tipo' or node.value == ',' or node.value == ':' or node.value == ':=' or node.value == '(' or node.value == ')' or node.value == 'fim'):
-        for child in node.children:
-            node.parent.children = [child] + list(node.parent.children)
-        node.parent = None
+    elif(tree.value == 'tipo' or tree.value == ',' or tree.value == ':' or tree.value == ':=' or tree.value == '(' or tree.value == ')' or tree.value == 'fim'):
+        for child in tree.children:
+            tree.parent.children = [child] + list(tree.parent.children)
+        tree.parent = None
 
         return None
-    elif(node.value == 'lista_variaveis'):
-        parent = node.parent
-        children = list(node.children)
-
-        while(len(children) > 0):
-            var = children[0]
-            if(children[0].value == 'var'):
+    elif(tree.value == 'lista_variaveis'):
+        parent = tree.parent
+        children = list(tree.children)
+        
+        while (len(children) > 0):
+            if (children[0].value != 'var'):
+                node = children[0]
+                node.parent = None
                 children = children[1:]
-                var.parent = parent
+                children = list(node.children) + children
             else:
-                var.parent = None
-
+                node = children[0]
                 children = children[1:]
-                children = list(var.children) + children
-
-        node.parent = None
+                node.parent = parent
+        tree.parent = None
 
         return parent
-    elif(node.value == 'inicializacao_variaveis'):
-        new_var = node
-        new_var.value = 'atribuicao'
-        aux = new_var.children[0]
+    elif(tree.value == 'inicializacao_variaveis'):
+        node = tree
+        node.value = 'atribuicao'
+        aux = node.children[0]
         aux.parent = None
-
+        
         for child in aux.children:
-            child.parent = new_var
+            child.parent = node
 
-        return new_var
-    elif(node.value == 'lista_parametros'):
-        first_params_list = node
+        return node
+    elif(tree.value == 'lista_parametros'):
+        first_params_list = tree
         children = list(first_params_list.children)
-
-        while(len(children) > 0):
-            node = children[0]
-            if(children[0].value == 'parametro'):
-                children = children[1:]
-                if(node.parent != first_params_list):
-                    node.parent = None
-                    first_params_list.children = [
-                        node] + list(first_params_list.children)
-            else:
+        
+        while (len(children) > 0):
+            if (children[0].value != 'parametro'):
+                node = children[0]
                 node.parent = None
                 children = children[1:]
-                if(len(node.children) > 0):
-                    children = list(node.children) + children
-
-        return first_params_list
-    elif(node.value == 'lista_argumentos'):
-        first_argument_list = node
-        children = list(first_argument_list.children)
-
-        while(len(children) > 0):
-            node = children[0]
-            if(children[0].value != 'expressao'):
-                children = children[1:]
-                if(node.parent != first_argument_list):
-                    node.parent = None
-                    first_argument_list.children = [
-                        node] + list(first_argument_list.children)
-            else:
-                node.parent = None
-                children = children[1:]
-                if(len(node.children) > 0):
-                    children = list(node.children) + children
-
-        return first_argument_list
-    elif(node.value == 'parametro'):
-        first_param = node
-        children = list(first_param.children)
-
-        while(len(children) > 0):
-            node = children[0]
-            if(children[0].value == 'parametro'):
-                node.parent = None
-                children = children[1:]
+                
                 if len(node.children) > 0:
                     children = list(node.children) + children
             else:
+                node = children[0]
                 children = children[1:]
-                if(node.parent != first_param):
+                
+                if(node.parent != first_params_list):
+                    node.parent = None
+                    first_params_list.children = [node] + list(first_params_list.children)
+
+        return first_params_list
+    elif(tree.value == 'lista_argumentos'):
+        first_argument_list = tree
+        children = list(first_argument_list.children)
+        
+        while (len(children) > 0):
+            if (children[0].value != 'expressao'):
+                node = children[0]
+                node.parent = None
+                children = children[1:]
+               
+                if len(node.children) > 0:
+                    children = list(node.children) + children
+            else:
+                node = children[0]
+                children = children[1:]
+                
+                if(node.parent != first_argument_list):
+                    node.parent = None
+                    first_argument_list.children = [node] + list(first_argument_list.children)
+
+        return first_argument_list
+    elif(tree.value == 'parametro'):
+        first_param = tree
+        children = list(first_param.children)
+        
+        while (len(children) > 0):
+            if (children[0].value == 'parametro'):
+                node = children[0]
+                node.parent = None
+                children = children[1:]
+                
+                if len(node.children) > 0:
+                    children = list(node.children) + children
+            else:
+                node = children[0]
+                children = children[1:]
+                
+                if (node.parent != first_param):
                     first_param.children = [node] + list(first_param.children)
 
         return first_param
-    elif(node.value == 'indice'):
-        index = node
+    elif(tree.value == 'indice'):
+        index = tree
         children = list(index.children)
-
-        while(len(children) > 0):
-            if(children[0].value == 'indice'):
+        while (len(children) > 0):
+            if (children[0].value == 'indice'):
                 node = children[0]
                 children = children[1:]
                 node.parent = None
                 new_children = []
-
+                
                 for child in node.children:
                     child.parent = None
                     new_children.append(child)
-
                 children = new_children + children
                 index.children = new_children + list(index.children)
+                
             else:
                 children = children[1:]
 
         return index
-    elif(node.value == 'retorna' or node.value == 'leia' or node.value == 'escreva' or node.value == 'então' or node.value == 'repita' or node.value == 'até'):
-        action = node
+    elif(tree.value == 'retorna' or tree.value == 'leia' or tree.value == 'escreva' or tree.value == 'então' or tree.value == 'repita' or tree.value == 'até'):
+        action = tree
         children = list(action.children)
 
         while(len(children) > 0):
@@ -169,8 +177,8 @@ def examine_node(node):
             children = children[1:]
 
         return action
-    elif(node.value == 'condicional'):
-        conditional = node
+    elif(tree.value == 'condicional'):
+        conditional = tree
         children = conditional.children
         children_if = children[0]
         children_expression = children[1]
@@ -199,19 +207,11 @@ def examine_node(node):
             children[4].parent = None
 
         return conditional
-    elif(node.value == 'expressao_logica' or node.value == 'expressao_simples' or node.value == 'expressao_multiplicativa' or node.value == 'expressao_aditiva' or node.value == 'expressao_unaria' or node.value == 'fator'):
-        expression = node
+    elif(tree.value == 'expressao_logica' or tree.value == 'expressao_simples' or tree.value == 'expressao_multiplicativa' or tree.value == 'expressao_aditiva'):
+        expression = tree
         children = list(expression.children)
 
-        if(len(children) == 1):
-            expression.value = children[0].value
-            children[0].parent = None
-
-            for child in children[0].children:
-                child.parent = expression
-
-            expression = expression.parent
-        elif(len(children) == 3):
+        if(len(children) == 3):
             expression.value = children[1].children[0].value
             expression.line = children[1].children[0].line
             expression.pos = children[1].children[0].pos
@@ -219,18 +219,27 @@ def examine_node(node):
             new_children = list(expression.children)
             new_children.pop(1)
             expression.children = new_children
+        
+        elif(len(children) == 1):
+            expression.value = children[0].value
+            children[0].parent = None
+
+            for child in children[0].children:
+                child.parent = expression
+
+            expression = expression.parent
 
         return expression
-    elif(node.value == 'operador_logico' or node.value == 'operador_soma' or node.value == 'operador_multiplicacao' or node.value == 'operador_relacional' or node.value == 'operador_negacao'):
-        root = node
+    elif(tree.value == 'operador_logico' or tree.value == 'operador_soma' or tree.value == 'operador_multiplicacao' or tree.value == 'operador_relacional' or tree.value == 'operador_negacao'):
+        root = tree
         child = root.children[0]
 
         child.parent = None
         root.value = child.value
 
         return root
-    elif(node.value == 'expressao'):
-        expression = node
+    elif(tree.value == 'expressao'):
+        expression = tree
         child = list(expression.children)[0]
 
         if(child.value == 'atribuicao'):
@@ -239,14 +248,14 @@ def examine_node(node):
             expression.children = child.children
         return expression
 
-    return node
+    return tree
 
 
 def prune_tree(big_tree):
     global nodes_read
     nodes_read.append(big_tree)
 
-    tree = examine_node(big_tree)
+    tree = examine_tree(big_tree)
 
     if(not tree and tree not in nodes_read):
         return

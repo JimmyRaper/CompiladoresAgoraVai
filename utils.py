@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from anytree.exporter import DotExporter
 from anytree import RenderTree
 
